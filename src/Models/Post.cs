@@ -27,6 +27,7 @@ public class Post
         get => _liveDate ?? LiveDateString?.FromDateString();
         init => _liveDate = value;
     }
+
     public string ToString(bool includeId = false) => includeId
         ? $"[{LiveDate?.ToShortDateString()}] Id: {Id}, Track: {TrackId}, Description: {Description}"
         : $"[{LiveDate?.ToShortDateString()}] Track: {TrackId}, Description: {Description}";

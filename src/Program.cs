@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Cocona;
 using NoonGMT.CLI;
 using NoonGMT.CLI.Extensions;
@@ -89,6 +90,24 @@ app.AddCommand("get", async ([FromService] PostClient client, [Option] string? i
     }
 
     Console.WriteLine(result.ToString(true));
+});
+
+app.AddCommand("count", async ([FromService] PostClient client) =>
+{
+    var (total, queued, next) = await client.CountAsync();
+    var responseBuilder = new StringBuilder($"{total} total post(s). {queued} queued up for the future.");
+    if (next is not null)
+    {
+        responseBuilder.Append($" Next post is due {next.Value.ToShortDateString()}");
+    }
+
+    if (queued <= 2)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+    }
+
+    Console.WriteLine(responseBuilder.ToString());
+    Console.ResetColor();
 });
 
 app.Run();

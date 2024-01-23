@@ -89,4 +89,27 @@ public class PostClient
 
         return await response.Content.ReadFromJsonAsync<Post>();
     }
+
+    public async Task<(int total, int queued, DateTime? nextUp)> CountAsync()
+    {
+        var url = $"/api/collections/posts/records"            
+            .AddQueryParameter("page", 1)
+            .AddQueryParameter("perPage", 100) // Its reasonable to assume there won't be over 100 post submitted in advance
+            .AddQueryParameter("fields", "live_date") // Return only the live date to keep the query light
+            .AddQueryParameter("sort", "-live_date");
+
+        var response = await _client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
+
+        var total = body.TotalItems;
+        var queued = body.Items.Count(x => x.LiveDate > DateTime.UtcNow);
+        var next = body.Items
+            .OrderBy(x => x.LiveDate)
+            .FirstOrDefault(x => x.LiveDate > DateTime.UtcNow)
+            ?.LiveDate;
+
+        return (total, queued, next);
+    }
 }
