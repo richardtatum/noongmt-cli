@@ -5,7 +5,10 @@ using NoonGMT.CLI;
 using NoonGMT.CLI.Extensions;
 using NoonGMT.CLI.Models;
 
-var builder = CoconaApp.CreateBuilder();
+var builder = CoconaApp.CreateBuilder(null, opt =>
+{
+    opt.EnableShellCompletionSupport = true;
+});
 
 builder.Services.AddScoped<PostClient>();
 builder.Services.Configure<NoonGmtOptions>(builder.Configuration.GetSection(nameof(NoonGmtOptions)));
