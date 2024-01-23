@@ -13,8 +13,10 @@ public class PostClient
     {
         _client = new()
         {
-            BaseAddress = new Uri(options.Value.BaseUrl)
+            BaseAddress = new Uri(options.Value.BaseUrl),
         };
+        
+        _client.DefaultRequestHeaders.Add("Authorization", options.Value.ApiKey);
     }
 
     public async Task<Post?> GetAsync(string id)
