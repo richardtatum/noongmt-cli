@@ -94,8 +94,14 @@ app.AddCommand("get", async ([FromService] PostClient client, [Option] string? i
 
 app.AddCommand("count", async ([FromService] PostClient client) =>
 {
-    var (total, queued, next) = await client.CountAsync();
-    var responseBuilder = new StringBuilder($"{total} total post(s). {queued} queued up for the future.");
+    var total = await client.CountAsync();
+    Console.WriteLine($"{total} total post(s)");
+});
+
+app.AddCommand("queue", async ([FromService] PostClient client) =>
+{
+    var (queued, next) = await client.GetQueueAsync();
+    var responseBuilder = new StringBuilder($"{queued} post(s) queued up for publishing.");
     if (next is not null)
     {
         responseBuilder.Append($" Next post is due {next.Value.ToShortDateString()}");
