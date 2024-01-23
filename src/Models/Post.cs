@@ -9,7 +9,7 @@ public class Post
     private DateTime? _liveDate;
     
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     [JsonPropertyName("track_id")]
     public string TrackId { get; set; } = null!;
