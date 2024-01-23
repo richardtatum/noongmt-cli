@@ -64,7 +64,7 @@ app.AddCommand("update", async ([FromService] PostClient client, [Option] string
     existingPost.TrackId = trackId ?? existingPost.TrackId;
     existingPost.Description = description ?? existingPost.Description;
 
-    var result = await client.UpdateAsync(existingPost.Id, existingPost);
+    var result = await client.UpdateAsync(existingPost.Id!, existingPost);
     
     Console.WriteLine("Success! Updated post:");
     Console.WriteLine(result!.ToString());
