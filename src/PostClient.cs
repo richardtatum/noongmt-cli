@@ -127,4 +127,22 @@ public class PostClient
 
         return (queued, next);
     }
+
+    public async Task<DateTime> GetNextAvailableDateAsync()
+    {
+        var url = $"/api/collections/posts/records"            
+            .AddQueryParameter("page", 1)
+            .AddQueryParameter("perPage", 1) // We just want the most future post date.
+            .AddQueryParameter("fields", "live_date")
+            .AddQueryParameter("skipTotal", 1)
+            .AddQueryParameter("sort", "-live_date");
+
+        var response = await _client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
+        var newestPost = body?.Items.FirstOrDefault()?.LiveDate;
+  
+        return newestPost?.AddDays(1) ?? DateTime.UtcNow.ToNoonLocalInUTC();
+    }
 }

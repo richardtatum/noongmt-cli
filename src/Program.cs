@@ -28,16 +28,21 @@ app.AddCommand("list",
 
 app.AddCommand("add",
     async ([FromService] PostClient client,
-        [Option('l', Description = "The date the post goes live.")] DateTime goLiveDate,
+        [Option('l', Description = "The date the post goes live.")] DateTime? goLiveDate,
         [Option('i', Description = "The ID or share link of the Spotify track.")] string track,
         [Option('d', Description = "An optional description.")] string? description) =>
     {
-        var date = goLiveDate.ToNoonLocalInUTC();
-        var existingPost = await client.GetAsync(date);
-        if (existingPost is not null)
+        var date = goLiveDate?.ToNoonLocalInUTC() ?? await client.GetNextAvailableDateAsync();
+        
+        // We only need to check the date is free if its provided
+        if (goLiveDate is not null)
         {
-            Console.WriteLine("Post already exists for this date.");
-            return;
+            var existingPost = await client.GetAsync(date);
+            if (existingPost is not null)
+            {
+                Console.WriteLine("Post already exists for this date.");
+                return;
+            }
         }
 
         var trackId = track.GetTrackId();
