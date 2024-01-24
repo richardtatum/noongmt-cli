@@ -110,10 +110,12 @@ app.AddCommand("queue", async ([FromService] PostClient client) =>
         responseBuilder.Append($" Next post is due {next.Value.ToShortDateString()}");
     }
 
-    if (queued <= 2)
+    Console.ForegroundColor = queued switch
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-    }
+        > 2 => ConsoleColor.Green,
+        2 => ConsoleColor.DarkYellow,
+        < 2 => ConsoleColor.Red
+    };
 
     Console.WriteLine(responseBuilder.ToString());
     Console.ResetColor();
