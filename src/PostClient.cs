@@ -102,7 +102,7 @@ public class PostClient
         response.EnsureSuccessStatusCode();
 
         var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
-        return body!.TotalItems;
+        return body?.TotalItems ?? 0;
     }
     
     public async Task<(int queued, DateTime? nextUp)> GetQueueAsync()
@@ -119,8 +119,8 @@ public class PostClient
 
         var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
 
-        var queued = body!.Items.Count(x => x.LiveDate > DateTime.UtcNow);
-        var next = body.Items
+        var queued = body?.Items.Count(x => x.LiveDate > DateTime.UtcNow) ?? 0;
+        var next = body?.Items
             .OrderBy(x => x.LiveDate)
             .FirstOrDefault(x => x.LiveDate > DateTime.UtcNow)
             ?.LiveDate;
