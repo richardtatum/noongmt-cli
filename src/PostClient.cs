@@ -49,6 +49,22 @@ public class PostClient
 
         return body?.Items.FirstOrDefault() ?? null;
     }
+    
+    public async Task<Post?> GetByTrackIdAsync(string trackId)
+    {
+        var url = $"/api/collections/posts/records"
+            .AddQueryParameter("page", 1)
+            .AddQueryParameter("perPage", 1) // We just want the most future post date.
+            .AddQueryParameter("skipTotal", 1)
+            .AddQueryParameter("filter", $"track_id='{trackId}'");
+
+        var response = await _client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
+
+        return body?.Items.FirstOrDefault() ?? null;
+    }
 
     public async Task<Post[]> GetAllAsync(int listSize = 5, bool showOnlyLive = true)
     {

@@ -46,6 +46,15 @@ app.AddCommand("add",
         }
 
         var trackId = track.GetTrackId();
+        var duplicate = await client.GetByTrackIdAsync(trackId);
+        if (duplicate is not null)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Track has already been submitted. Original post:");
+            Console.WriteLine(duplicate.ToString(true));
+            return;
+        }
+        
         var post = new Post
         {
             LiveDate = date,
