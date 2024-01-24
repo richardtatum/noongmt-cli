@@ -74,7 +74,8 @@ app.AddCommand("update",
         [Option(Description = "The id of the post.")] string? id, 
         [Option(Description = "The go live date of the post.")] DateTime? date, 
         [Option('d', Description = "The replacement post description.")] string? description,
-        [Option('i', Description = "The replacement track.")] string? track) =>
+        [Option('i', Description = "The replacement track.")] string? track,
+        [Option(Description = "Force submit the post, even if a duplicate has been found.")] bool force = false) =>
     {
         if (string.IsNullOrWhiteSpace(id) && date is null)
         {
@@ -92,7 +93,20 @@ app.AddCommand("update",
             return;
         }
 
-        existingPost.TrackId = track?.GetTrackId() ?? existingPost.TrackId;
+        var trackId = track?.GetTrackId();
+        if (trackId is not null)
+        {
+            var duplicate = await client.GetByTrackIdAsync(trackId);
+            if (duplicate is not null && !force)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Track has already been submitted. Original post:");
+                Console.WriteLine(duplicate.ToString(true));
+                return;
+            }
+        }
+
+        existingPost.TrackId = trackId ?? existingPost.TrackId;
         existingPost.Description = description ?? existingPost.Description;
 
         var result = await client.UpdateAsync(existingPost.Id!, existingPost);
