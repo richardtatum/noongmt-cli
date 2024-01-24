@@ -30,7 +30,8 @@ app.AddCommand("add",
     async ([FromService] PostClient client,
         [Option('l', Description = "The date the post goes live.")] DateTime? goLiveDate,
         [Option('i', Description = "The ID or share link of the Spotify track.")] string track,
-        [Option('d', Description = "An optional description.")] string? description) =>
+        [Option('d', Description = "An optional description.")] string? description,
+        [Option(Description = "Force submit the post, even if a duplicate has been found.")] bool force = false) =>
     {
         var date = goLiveDate?.ToNoonLocalInUTC() ?? await client.GetNextAvailableDateAsync();
         
@@ -47,7 +48,7 @@ app.AddCommand("add",
 
         var trackId = track.GetTrackId();
         var duplicate = await client.GetByTrackIdAsync(trackId);
-        if (duplicate is not null)
+        if (duplicate is not null && !force)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Track has already been submitted. Original post:");
