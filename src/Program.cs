@@ -5,10 +5,7 @@ using NoonGMT.CLI;
 using NoonGMT.CLI.Extensions;
 using NoonGMT.CLI.Models;
 
-var builder = CoconaApp.CreateBuilder(null, opt =>
-{
-    opt.EnableShellCompletionSupport = true;
-});
+var builder = CoconaApp.CreateBuilder(null, opt => { opt.EnableShellCompletionSupport = true; });
 
 builder.Services.AddScoped<PostClient>();
 builder.Services.Configure<NoonGmtOptions>(builder.Configuration.GetSection(nameof(NoonGmtOptions)));
@@ -29,47 +26,34 @@ app.AddCommand("list",
         }
     });
 
-    var date = goLiveDate.ToNoonLocalInUTC();
-    var existingPost = await client.GetAsync(date);
-    if (existingPost is not null)
-    {
-        Console.WriteLine("Post already exists for this date.");
-        return;
-    }
-    
-    var post = new Post
-    {
-        LiveDate = date,
-        TrackId = trackId,
-        Description = description
-    };
-    
-    var result = await client.AddAsync(post);
-    
-    Console.WriteLine($"Success! New ID: {result}");
-});
 app.AddCommand("add",
     async ([FromService] PostClient client,
         [Option('l', Description = "The date the post goes live.")] DateTime goLiveDate,
         [Option('i', Description = "The ID or share link of the Spotify track.")] string track,
         [Option('d', Description = "An optional description.")] string? description) =>
     {
+        var date = goLiveDate.ToNoonLocalInUTC();
+        var existingPost = await client.GetAsync(date);
+        if (existingPost is not null)
+        {
+            Console.WriteLine("Post already exists for this date.");
+            return;
+        }
 
-    if (string.IsNullOrWhiteSpace(id) && date is null)
-    {
-        Console.WriteLine("Id or Date need to be provided.");
-        return;
-    }
-    
-    var existingPost = !string.IsNullOrWhiteSpace(id) 
-        ? await client.GetAsync(id) 
-        : await client.GetAsync(date!.Value);
-    
-    if (existingPost is null)
-    {
-        Console.WriteLine("No post found.");
-        return;
-    }
+        var trackId = track.GetTrackId();
+        var post = new Post
+        {
+            LiveDate = date,
+            TrackId = trackId,
+            Description = description
+        };
+
+        var newPost = await client.AddAsync(post);
+
+        Console.WriteLine("Success! New Post:");
+        Console.WriteLine(newPost!.ToString(true, true));
+    });
+
 app.AddCommand("update",
     async ([FromService] PostClient client, 
         [Option(Description = "The id of the post.")] string? id, 
@@ -77,15 +61,30 @@ app.AddCommand("update",
         [Option('d', Description = "The replacement post description.")] string? description,
         [Option('i', Description = "The replacement track.")] string? track) =>
     {
+        if (string.IsNullOrWhiteSpace(id) && date is null)
+        {
+            Console.WriteLine("Id or Date need to be provided.");
+            return;
+        }
 
-    existingPost.TrackId = trackId ?? existingPost.TrackId;
-    existingPost.Description = description ?? existingPost.Description;
+        var existingPost = !string.IsNullOrWhiteSpace(id)
+            ? await client.GetAsync(id)
+            : await client.GetAsync(date!.Value);
 
-    var result = await client.UpdateAsync(existingPost.Id!, existingPost);
-    
-    Console.WriteLine("Success! Updated post:");
-    Console.WriteLine(result!.ToString());
-});
+        if (existingPost is null)
+        {
+            Console.WriteLine("No post found.");
+            return;
+        }
+
+        existingPost.TrackId = track?.GetTrackId() ?? existingPost.TrackId;
+        existingPost.Description = description ?? existingPost.Description;
+
+        var result = await client.UpdateAsync(existingPost.Id!, existingPost);
+
+        Console.WriteLine("Success! Updated post:");
+        Console.WriteLine(result!.ToString());
+    });
 
 app.AddCommand("get", 
     async ([FromService] PostClient client, 
@@ -98,17 +97,17 @@ app.AddCommand("get",
         return;
     }
 
-    var result = !string.IsNullOrWhiteSpace(id) 
-        ? await client.GetAsync(id) 
+    var result = !string.IsNullOrWhiteSpace(id)
+        ? await client.GetAsync(id)
         : await client.GetAsync(date!.Value);
-    
+
     if (result is null)
     {
         Console.WriteLine("No post found.");
         return;
     }
 
-    Console.WriteLine(result.ToString(true));
+    Console.WriteLine(result.ToString(true, true));
 });
 
 app.AddCommand("count", async ([FromService] PostClient client) =>
