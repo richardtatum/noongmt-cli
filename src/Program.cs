@@ -15,18 +15,20 @@ builder.Services.Configure<NoonGmtOptions>(builder.Configuration.GetSection(name
 
 var app = builder.Build();
 
-app.AddCommand("list", async ([FromService] PostClient client, int size = 5, bool showOnlyLive = false, bool includeIds = false) =>
-{
-    var results = await client.GetAllAsync(size, showOnlyLive);
-
-    foreach (var post in results.OrderByDescending(x => x.LiveDate))
+app.AddCommand("list",
+    async ([FromService] PostClient client, 
+        [Option('s', Description = "The number of returned items.")] int size = 5, 
+        [Option(Description = "Whether to show live and future posts.")] bool showOnlyLive = false, 
+        [Option(Description = "Whether to include the IDs of the posts.")] bool includeIds = false,
+        [Option(Description = "Whether to include the time the post goes live, along with the date.")] bool includeTime = false) =>
     {
-        Console.WriteLine(post.ToString(includeIds));
-    }
-});
+        var results = await client.GetAllAsync(size, showOnlyLive);
+        foreach (var post in results.OrderByDescending(x => x.LiveDate))
+        {
+            Console.WriteLine(post.ToString(includeIds, includeTime));
+        }
+    });
 
-app.AddCommand("add", async ([FromService] PostClient client, [Argument] DateTime goLiveDate, [Argument] string trackId, [Argument] string? description) =>
-{
     var date = goLiveDate.ToNoonLocalInUTC();
     var existingPost = await client.GetAsync(date);
     if (existingPost is not null)
@@ -46,9 +48,13 @@ app.AddCommand("add", async ([FromService] PostClient client, [Argument] DateTim
     
     Console.WriteLine($"Success! New ID: {result}");
 });
+app.AddCommand("add",
+    async ([FromService] PostClient client,
+        [Option('l', Description = "The date the post goes live.")] DateTime goLiveDate,
+        [Option('i', Description = "The ID or share link of the Spotify track.")] string track,
+        [Option('d', Description = "An optional description.")] string? description) =>
+    {
 
-app.AddCommand("update", async ([FromService] PostClient client, [Option] string? id, [Option] DateTime? date, string? description, string? trackId) =>
-{
     if (string.IsNullOrWhiteSpace(id) && date is null)
     {
         Console.WriteLine("Id or Date need to be provided.");
@@ -64,6 +70,13 @@ app.AddCommand("update", async ([FromService] PostClient client, [Option] string
         Console.WriteLine("No post found.");
         return;
     }
+app.AddCommand("update",
+    async ([FromService] PostClient client, 
+        [Option(Description = "The id of the post.")] string? id, 
+        [Option(Description = "The go live date of the post.")] DateTime? date, 
+        [Option('d', Description = "The replacement post description.")] string? description,
+        [Option('i', Description = "The replacement track.")] string? track) =>
+    {
 
     existingPost.TrackId = trackId ?? existingPost.TrackId;
     existingPost.Description = description ?? existingPost.Description;
