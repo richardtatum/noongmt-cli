@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Get the directory of the script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Change to the script's directory
+cd "$DIR"
+
+# Run your .NET binary with the provided command-line arguments
+./NoonGMT.CLI "$@"
