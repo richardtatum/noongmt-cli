@@ -15,8 +15,11 @@ public class PostClient
         {
             BaseAddress = new Uri(options.Value.BaseUrl),
         };
-        
-        _client.DefaultRequestHeaders.Add("Authorization", options.Value.ApiKey);
+
+        if (!string.IsNullOrWhiteSpace(options.Value.ApiKey))
+        {
+            _client.DefaultRequestHeaders.Add("Authorization", options.Value.ApiKey);
+        }
     }
 
     public async Task<Post?> GetAsync(string id)
@@ -68,16 +71,14 @@ public class PostClient
         return body?.Items ?? Array.Empty<Post>();
     }
 
-    public async Task<string?> AddAsync(Post request)
+    public async Task<Post?> AddAsync(Post request)
     {
         const string url = "/api/collections/posts/records";
 
         var response = await _client.PostAsJsonAsync(url, request);
         response.EnsureSuccessStatusCode();
 
-        var body = await response.Content.ReadFromJsonAsync<Post>();
-
-        return body?.Id;
+        return await response.Content.ReadFromJsonAsync<Post>();
     }
 
     public async Task<Post?> UpdateAsync(string id, Post request)
