@@ -74,7 +74,10 @@ app.AddCommand("update", async ([FromService] PostClient client, [Option] string
     Console.WriteLine(result!.ToString());
 });
 
-app.AddCommand("get", async ([FromService] PostClient client, [Option] string? id, [Option] DateTime? date) =>
+app.AddCommand("get", 
+    async ([FromService] PostClient client, 
+        [Option(Description = "The id of the post.")] string? id, 
+        [Option(Description = "The date of the post.")] DateTime? date) =>
 {
     if (string.IsNullOrWhiteSpace(id) && date is null)
     {
