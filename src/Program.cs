@@ -15,11 +15,11 @@ var app = builder.Build();
 app.AddCommand("list",
     async ([FromService] PostClient client, 
         [Option('s', Description = "The number of returned items.")] int size = 5, 
-        [Option(Description = "Whether to show live and future posts.")] bool showOnlyLive = false, 
+        [Option(Description = "Whether to show live and future posts.")] bool liveOnly = false, 
         [Option(Description = "Whether to include the IDs of the posts.")] bool includeIds = false,
         [Option(Description = "Whether to include the time the post goes live, along with the date.")] bool includeTime = false) =>
     {
-        var results = await client.GetAllAsync(size, showOnlyLive);
+        var results = await client.GetAllAsync(size, liveOnly);
         foreach (var post in results.OrderByDescending(x => x.LiveDate))
         {
             Console.WriteLine(post.ToString(includeIds, includeTime));
