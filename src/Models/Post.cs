@@ -28,7 +28,21 @@ public class Post
         init => _liveDate = value;
     }
 
-    public string ToString(bool includeId = false) => includeId
-        ? $"[{LiveDate?.ToShortDateString()}] Id: {Id}, Track: {TrackId}, Description: {Description}"
-        : $"[{LiveDate?.ToShortDateString()}] Track: {TrackId}, Description: {Description}";
+    public string ToString(bool includeId = false, bool includeTime = false)
+    {
+        var date = includeTime
+            ? $"[{LiveDate?.ToString()}] "
+            : $"[{LiveDate?.ToShortDateString()}] ";
+        
+        var builder = new StringBuilder(date);
+        if (includeId)
+        {
+            builder.Append($"Id: {Id}, ");
+        }
+
+        builder.Append($"Track: {TrackId}, Description: {Description}");
+
+        return builder.ToString();
+    }
+
 }
