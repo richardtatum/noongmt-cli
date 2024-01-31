@@ -21,6 +21,11 @@ public class AuthenticationService(SpotifyClient client, IOptions<Authentication
 
         // Otherwise auth with the client and store to file
         var response = await client.AuthenticateAsync();
+        if (response is null)
+        {
+            throw new InvalidOperationException("Unable to obtain bearer token from Spotify.");
+        }
+        
         await using var stream = File.Create(filePath);
         await JsonSerializer.SerializeAsync(stream, response);
         
