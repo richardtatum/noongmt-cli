@@ -1,20 +1,13 @@
 namespace NoonGMT.CLI.Features.Spotify;
 
-public class SpotifyService
+public class SpotifyService(AuthenticationService authService, SpotifyClient spotifyClient)
 {
-    private readonly AuthenticationService _authService;
-    private readonly SpotifyClient _spotifyClient;
-
-    public SpotifyService(AuthenticationService authService, SpotifyClient spotifyClient)
+    private string? BearerToken { get; set; }
+    
+    public async Task<string?> GetTrackSummaryAsync(string trackId)
     {
-        _authService = authService;
-        _spotifyClient = spotifyClient;
-    }
-
-    public async Task<string> GetTrackSummaryAsync(string trackId)
-    {
-        var bearerToken = await _authService.GetBearerTokenAsync();
-        var response = await _spotifyClient.GetTrackInformationAsync(bearerToken, trackId);
-        return response.ToString();
+        var bearerToken = BearerToken ??= await authService.GetBearerTokenAsync();
+        var response = await spotifyClient.GetTrackInformationAsync(bearerToken, trackId);
+        return response?.ToString();
     }
 }

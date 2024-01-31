@@ -4,21 +4,14 @@ using NoonGMT.CLI.Extensions;
 
 namespace NoonGMT.CLI.Features.Spotify;
 
-public class SpotifyClient
+public class SpotifyClient(IOptions<SpotifyOptions> options)
 {
-    private readonly HttpClient _client;
-    private readonly IOptions<SpotifyOptions> _options;
+    private readonly HttpClient _client = new();
 
-    public SpotifyClient(IOptions<SpotifyOptions> options)
+    public async Task<AuthenticationInformation?> AuthenticateAsync()
     {
-        _options = options;
-        _client = new();
-    }
-
-    public async Task<AuthenticationInformation> AuthenticateAsync()
-    {
-        var basicToken = Base64Encode($"{_options.Value.ClientId}:{_options.Value.ClientSecret}");
-        var url = _options.Value.AuthenticationEndpoint;
+        var basicToken = Base64Encode($"{options.Value.ClientId}:{options.Value.ClientSecret}");
+        var url = options.Value.AuthenticationEndpoint;
 
         var request = new HttpRequestMessage(HttpMethod.Post, url)
             .AddBasicAuthorization(basicToken)
@@ -28,20 +21,26 @@ public class SpotifyClient
             });
 
         var response = await _client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
 
         return await response.Content.ReadFromJsonAsync<AuthenticationInformation>();
     }
 
-    public async Task<TrackInformation> GetTrackInformationAsync(string bearerToken, string trackId)
+    public async Task<TrackInformation?> GetTrackInformationAsync(string bearerToken, string trackId)
     {
-        var url = $"{_options.Value.TrackInformationEndpoint}/{trackId}";
+        var url = $"{options.Value.TrackInformationEndpoint}/{trackId}";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url)
             .AddBearerToken(bearerToken);
 
         var response = await _client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
 
         return await response.Content.ReadFromJsonAsync<TrackInformation>();
     }
