@@ -13,7 +13,7 @@ public class AuthenticationService(SpotifyClient client, IOptions<Authentication
         if (TryReadAllText(filePath, out var store))
         {
             var auth = JsonSerializer.Deserialize<AuthenticationInformation>(store);
-            if (auth?.Expires >= DateTime.UtcNow)
+            if (auth?.Expires >= DateTime.UtcNow.AddSeconds(options.Value.ExpiryThreshold))
             {
                 return auth.AccessToken;
             }
