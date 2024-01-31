@@ -6,16 +6,12 @@ namespace NoonGMT.CLI;
 
 public class PostService(PostClient client, SpotifyService spotifyService)
 {
-    public async Task<Post[]> GetAllAsync(int size, bool liveOnly)
+    public async Task<IAsyncEnumerable<Post>> GetAllAsync(int size, bool liveOnly)
     {
         var results = await client.GetAllAsync(size, liveOnly);
-
-        foreach (var post in results)
-        {
-            post.TrackSummary = await spotifyService.GetTrackSummaryAsync(post.TrackId);
-        }
-
-        return results;
+        var postsWithTrackInfo = AddTrackInformation(results);
+        
+        return postsWithTrackInfo;
     }
 
     public async Task<Result<Post>> AddAsync(DateTime? goLiveDate, string track, string? description, bool force = false)
@@ -49,8 +45,14 @@ public class PostService(PostClient client, SpotifyService spotifyService)
         };
 
         var response = await client.AddAsync(post);
+        if (response is null)
+        {
+            return new Result<Post>("Unable to retrieve newly added post from site.");
+        }
+        
+        response = await AddTrackInformation(response);
 
-        return new Result<Post>(response!);
+        return new Result<Post>(response);
     }
 
     public async Task<Result<Post>> UpdateAsync(string? id, DateTime? date, string? description, string? track,
@@ -84,9 +86,15 @@ public class PostService(PostClient client, SpotifyService spotifyService)
         existingPost.TrackId = trackId ?? existingPost.TrackId;
         existingPost.Description = description ?? existingPost.Description;
 
-        var result = await client.UpdateAsync(existingPost.Id!, existingPost);
+        var response = await client.UpdateAsync(existingPost.Id!, existingPost);
+        if (response is null)
+        {
+            return new Result<Post>("Unable to retrieve newly updated post from site.");
+        }
 
-        return new Result<Post>(result!);
+        response = await AddTrackInformation(response);
+
+        return new Result<Post>(response);
     }
 
     public async Task<Result<Post>> GetAsync(string? id, DateTime? date)
@@ -96,14 +104,45 @@ public class PostService(PostClient client, SpotifyService spotifyService)
             return new Result<Post>("Id or Date need to be provided.");
         }
 
-        var result = !string.IsNullOrWhiteSpace(id)
+        var response = !string.IsNullOrWhiteSpace(id)
             ? await client.GetAsync(id)
             : await client.GetAsync(date!.Value);
 
-        return new Result<Post>(result);
+        if (response is null)
+        {
+            return new Result<Post>("Unable to retrieve post.");
+        }
+
+        response = await AddTrackInformation(response);
+        return new Result<Post>(response);
     }
 
     public Task<int> CountAsync() => client.CountAsync();
 
     public Task<(int queued, DateTime? next)> GetQueueAsync() => client.GetQueueAsync();
+
+    private async IAsyncEnumerable<Post> AddTrackInformation(IEnumerable<Post> posts)
+    {
+        foreach (var post in posts)
+        {
+            if (post.TrackId is null)
+            {
+                continue;
+            }
+
+            post.TrackSummary = await spotifyService.GetTrackSummaryAsync(post.TrackId);
+            yield return post;
+        }
+    }
+
+    private async Task<Post> AddTrackInformation(Post post)
+    {
+        if (post.TrackId is null)
+        {
+            return post;
+        }
+        
+        post.TrackSummary = await spotifyService.GetTrackSummaryAsync(post.TrackId);
+        return post;
+    }
 }
