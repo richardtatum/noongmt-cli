@@ -2,5 +2,5 @@ namespace NoonGMT.CLI.Features.Spotify;
 
 public class AuthenticationOptions
 {
-    public required string FilePath { get; set; }
+    public required string FilePath { get; set; } = "spotify-auth.json";
 }
