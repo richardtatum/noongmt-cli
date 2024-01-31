@@ -45,12 +45,7 @@ app.AddCommand("add",
         var result = await service.AddAsync(goLiveDate, track, description, force);
         if (!result.Success)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("ERROR!");
-            foreach (var error in result.Errors)
-            {
-                Console.WriteLine(error);
-            }
+            WriteErrors(result.Errors!);
             return;
         }
 
@@ -69,12 +64,7 @@ app.AddCommand("update",
         var result = await service.UpdateAsync(id, date, description, track, force);
         if (!result.Success)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("ERROR!");
-            foreach (var error in result.Errors)
-            {
-                Console.WriteLine(error);
-            }
+            WriteErrors(result.Errors!);
             return;
         }
 
@@ -90,12 +80,7 @@ app.AddCommand("get",
     var result = await service.GetAsync(id, date);
     if (!result.Success)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("ERROR!");
-        foreach (var error in result.Errors)
-        {
-            Console.WriteLine(error);
-        }
+        WriteErrors(result.Errors!);
         return;
     }
     
@@ -135,3 +120,14 @@ app.AddCommand("queue", async ([FromService] PostService service) =>
 });
 
 app.Run();
+return;
+
+void WriteErrors(IEnumerable<string> errors)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("ERROR!");
+    foreach (var error in errors)
+    {
+        Console.WriteLine(error);
+    }
+}
