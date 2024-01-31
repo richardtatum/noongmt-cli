@@ -13,7 +13,7 @@ public class Post
     public string? Id { get; set; }
 
     [JsonPropertyName("track_id")]
-    public string TrackId { get; set; } = null!;
+    public required string TrackId { get; set; }
     public string? Description { get; set; }
 
     [JsonPropertyName("live_date")]
