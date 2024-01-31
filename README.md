@@ -15,6 +15,24 @@ dotnet publish -r linux-x64 -o /path/to/output/folder
 dotnet publish -r win-x64  -o /path/to/output/folder
 ```
 
+Override the default values in the `/path/to/output/folder/appsettings.json` file:
+```json
+  "NoonGmtOptions": {
+    "BaseUrl": "http://localhost",
+    "ApiKey": "YOUR-API-KEY-HERE"
+  },
+  "SpotifyOptions": {
+    "AuthenticationEndpoint": "https://accounts.spotify.com/api/token",
+    "TrackInformationEndpoint": "https://api.spotify.com/v1/tracks",
+    "ClientId": "YOUR-CLIENT-ID",
+    "ClientSecret": "YOUR-CLIENT-SECRET"
+  },
+  "AuthenticationOptions": {
+    "FilePath": "spotify-auth.json",
+    "ExpiryThreshold": 300
+  }
+```
+
 Run the application:
 ```
 # ./NoonGMT.CLI
