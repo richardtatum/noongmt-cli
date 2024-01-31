@@ -13,7 +13,8 @@ public class Post
     public string? Id { get; set; }
 
     [JsonPropertyName("track_id")]
-    public string TrackId { get; set; } = null!;
+    public string? TrackId { get; set; }
+    public string? TrackSummary { get; set; }
     public string? Description { get; set; }
 
     [JsonPropertyName("live_date")]
@@ -41,7 +42,7 @@ public class Post
             builder.Append($"Id: {Id}, ");
         }
 
-        builder.Append($"Track: {TrackId}, Description: {Description}");
+        builder.Append($"Track: {TrackSummary ?? TrackId}, Description: {Description ?? "None"}");
 
         return builder.ToString();
     }
