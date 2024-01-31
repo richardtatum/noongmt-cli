@@ -58,9 +58,9 @@ Options:
 Set the output of the publish command to a folder be in your `$PATH`, or copy every file afterwards to allow calling the command from anywhere:
 ```
 # noongmt list
-[24/01/2024] Track: 52pGXXhSsBPx3jOSxlU35N, Description: A day doesn't really go by without me muttering 'Shoulda pulled up' under my breath
-[23/01/2024] Track: 5OaTl9fKnzumyRLFrTKhOp, Description: Listening to me trying to remember the lyrics must be hilarious.
-[22/01/2024] Track: 0hquQWY3xvYqN4qtiquniF, Description: My only real take away from the (decidedly average) Elvis film.
-[21/01/2024] Track: 17phhZDn6oGtzMe56NuWvj, Description: Definitely go watch his cover of Tennessee Whiskey on YouTube
-[20/01/2024] Track: 0dIgcqNnTDWT3q8DT5KyX3, Description: Good Friday vibes delivered on a Saturday
+[31/01/2024] Track: Otis Kane - Run, Description: The bass hits hard the moment the song starts and is quickly followed by Kanes' velvet vocals. I can't get enough of it.
+[30/01/2024] Track: Lous and The Yakuza - Dilemme, Description: I first came across Lous and The Yakuza through NPRs' Tiny Desk Concert and I have been transfixed ever since.
+[29/01/2024] Track: Pa Salieu - Betty, Description: Some upbeat hustle vibes to get you through a Monday. Pa isn't the only one who could do with a million cash.
+[28/01/2024] Track: H.E.R. - Do To Me, Description: The vocals from H.E.R are like honey in this. The weekend is almost over but this makes it all the more palatable.
+[27/01/2024] Track: Raheaven - 7AM, Description: The Saturday morning come-down.
 ```
