@@ -125,7 +125,6 @@ return;
 void WriteErrors(IEnumerable<string> errors)
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("ERROR!");
     foreach (var error in errors)
     {
         Console.WriteLine(error);
