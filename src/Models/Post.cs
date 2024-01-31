@@ -42,7 +42,7 @@ public class Post
             builder.Append($"Id: {Id}, ");
         }
 
-        builder.Append($"Track: {TrackSummary ?? TrackId}, Description: {Description}");
+        builder.Append($"Track: {TrackSummary ?? TrackId}, Description: {Description ?? "None"}");
 
         return builder.ToString();
     }
