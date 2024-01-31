@@ -10,9 +10,8 @@ public class AuthenticationService(SpotifyClient client, IOptions<Authentication
         var filePath = options.Value.FilePath;
         
         // If a store already exists, try to use that first
-        if (File.Exists(filePath))
+        if (TryReadAllText(filePath, out var store))
         {
-            var store = await File.ReadAllTextAsync(filePath);
             var auth = JsonSerializer.Deserialize<AuthenticationInformation>(store);
             if (auth?.Expires >= DateTime.UtcNow)
             {
@@ -27,5 +26,16 @@ public class AuthenticationService(SpotifyClient client, IOptions<Authentication
         
         return response.AccessToken;
     }
-    
+
+    private static bool TryReadAllText(string filePath, out string text)
+    {
+        if (!File.Exists(filePath))
+        {
+            text = string.Empty;
+            return false;
+        }
+
+        text = File.ReadAllText(filePath);
+        return true;
+    }
 }
