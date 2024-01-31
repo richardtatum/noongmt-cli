@@ -15,12 +15,6 @@ builder.Services.AddSpotify(
 
 var app = builder.Build();
 
-app.AddCommand(async ([FromService] SpotifyService service) =>
-{
-    var track = await service.GetTrackSummaryAsync("34UANp5qxDg6YcgrlDeILZ");
-    Console.WriteLine(track);
-});
-
 app.AddCommand("list",
 async ([FromService] PostService service, 
     [Option('s', Description = "The number of returned items.")] int size = 5, 
