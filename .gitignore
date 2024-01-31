@@ -4,3 +4,4 @@ riderModule.iml
 .idea/
 **/bin/
 **/obj/
+**/spotify-auth.json
