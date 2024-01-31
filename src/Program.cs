@@ -23,7 +23,7 @@ async ([FromService] PostService service,
     [Option(Description = "Whether to include the time the post goes live, along with the date.")] bool includeTime = false) =>
 {
     var results = await service.GetAllAsync(size, liveOnly);
-    foreach (var post in results.OrderByDescending(x => x.LiveDate))
+    await foreach (var post in results)
     {
         Console.WriteLine(post.ToString(includeIds, includeTime));
     }
