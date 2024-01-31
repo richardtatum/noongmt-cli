@@ -125,6 +125,11 @@ return;
 void WriteErrors(IEnumerable<string> errors)
 {
     Console.ForegroundColor = ConsoleColor.Red;
+    if (!errors.Any())
+    {
+        Console.WriteLine("Failed but no error message provided!");
+    }
+    
     foreach (var error in errors)
     {
         Console.WriteLine(error);
