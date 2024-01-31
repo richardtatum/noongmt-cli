@@ -1,14 +1,12 @@
 ﻿using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 using Cocona;
 using NoonGMT.CLI;
+using NoonGMT.CLI.Extensions;
 using NoonGMT.CLI.Features.Spotify;
 
 var builder = CoconaApp.CreateBuilder(null, opt => { opt.EnableShellCompletionSupport = true; });
 
-builder.Services.AddScoped<PostClient>();
-builder.Services.AddScoped<PostService>();
-builder.Services.Configure<NoonGmtOptions>(builder.Configuration.GetSection(nameof(NoonGmtOptions)));
+builder.Services.AddNoonGMT(builder.Configuration.GetSection(nameof(NoonGmtOptions)));
 builder.Services.AddSpotify(
     builder.Configuration.GetSection(nameof(SpotifyOptions)),
     builder.Configuration.GetSection(nameof(AuthenticationOptions)));
