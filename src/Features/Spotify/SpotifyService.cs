@@ -7,6 +7,12 @@ public class SpotifyService(AuthenticationService authService, SpotifyClient spo
     public async Task<string?> GetTrackSummaryAsync(string trackId)
     {
         var bearerToken = BearerToken ??= await authService.GetBearerTokenAsync();
+        if (bearerToken is null)
+        {
+            // No bearer token means we can't obtain track information.
+            return trackId;
+        }
+
         var response = await spotifyClient.GetTrackInformationAsync(bearerToken, trackId);
         return response?.ToString();
     }

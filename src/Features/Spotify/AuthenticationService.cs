@@ -5,7 +5,7 @@ namespace NoonGMT.CLI.Features.Spotify;
 
 public class AuthenticationService(SpotifyClient client, IOptions<AuthenticationOptions> options)
 {
-    public async Task<string> GetBearerTokenAsync()
+    public async Task<string?> GetBearerTokenAsync()
     {
         var filePath = options.Value.FilePath;
         
@@ -23,7 +23,8 @@ public class AuthenticationService(SpotifyClient client, IOptions<Authentication
         var response = await client.AuthenticateAsync();
         if (response is null)
         {
-            throw new InvalidOperationException("Unable to obtain bearer token from Spotify.");
+            // If no auth was obtained, exit here
+            return null;
         }
         
         await using var stream = File.Create(filePath);
