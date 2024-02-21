@@ -79,14 +79,8 @@ async ([FromService] PostService service,
         WriteErrors(result.Errors!);
         return;
     }
-    
-    if (result.Value is null)
-    {
-        Console.WriteLine("No post found.");
-        return;
-    }
 
-    Console.WriteLine(result.Value.ToString(true, true));
+    Console.WriteLine(result.Value!.ToString(true, true));
 });
 
 app.AddCommand("remove",
