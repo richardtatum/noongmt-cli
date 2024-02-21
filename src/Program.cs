@@ -89,6 +89,22 @@ async ([FromService] PostService service,
     Console.WriteLine(result.Value.ToString(true, true));
 });
 
+app.AddCommand("remove",
+    async ([FromService] PostService service,
+        [Option(Description = "The id of the post.")] string? id, 
+        [Option(Description = "The date of the post.")] DateTime? date) =>
+    {
+        var result = await service.RemoveAsync(id, date);
+        if (!result.Success)
+        {
+            WriteErrors(result.Errors!);
+            return;
+        }
+        
+        Console.WriteLine("Success! Post removed:");
+        Console.WriteLine(result.Value!.ToString(true, true));
+    });
+
 app.AddCommand("count", async ([FromService] PostService service) =>
 {
     var total = await service.CountAsync();

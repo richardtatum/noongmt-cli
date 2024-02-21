@@ -116,6 +116,28 @@ public class PostService(PostClient client, SpotifyService spotifyService)
         response = await AddTrackInformation(response);
         return new Result<Post>(response);
     }
+    
+    public async Task<Result<Post>> RemoveAsync(string? id, DateTime? date)
+    {
+        if (string.IsNullOrWhiteSpace(id) && date is null)
+        {
+            return new Result<Post>("Id or Date need to be provided.");
+        }
+        
+        var response = !string.IsNullOrWhiteSpace(id)
+            ? await client.GetAsync(id)
+            : await client.GetAsync(date!.Value);
+
+        if (response is null)
+        {
+            return new Result<Post>("Unable to retrieve post.");
+        }
+        
+        response = await AddTrackInformation(response);
+
+        await client.DeleteAsync(response.Id!);
+        return new Result<Post>(response);
+    }
 
     public Task<int> CountAsync() => client.CountAsync();
 

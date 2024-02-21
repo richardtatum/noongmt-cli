@@ -107,6 +107,14 @@ public class PostClient
         return await response.Content.ReadFromJsonAsync<Post>();
     }
 
+    public async Task DeleteAsync(string id)
+    {
+        var url = $"/api/collections/posts/records/{id}";
+
+        var response = await _client.DeleteAsync(url);
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task<int> CountAsync()
     {
         var url = $"/api/collections/posts/records"            
