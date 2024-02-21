@@ -67,8 +67,12 @@ async ([FromService] PostService service,
 app.AddCommand("get", 
 async ([FromService] PostService service, 
     [Option(Description = "The id of the post.")] string? id, 
-    [Option(Description = "The date of the post.")] DateTime? date) =>
+    [Option(Description = "The date of the post.")] DateTime? date,
+    [Option(Description = "Get the next post to release.")] bool next = false) =>
 {
+    // If no date is provided, or next is and its before 12, show todays release
+    date ??= next && DateTime.UtcNow.Hour >= 12 ? DateTime.UtcNow.AddDays(1) : DateTime.UtcNow;
+    
     var result = await service.GetAsync(id, date);
     if (!result.Success)
     {
