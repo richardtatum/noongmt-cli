@@ -10,7 +10,7 @@ public class SpotifyService(AuthenticationService authService, SpotifyClient spo
         if (bearerToken is null)
         {
             // No bearer token means we can't obtain track information.
-            return trackId;
+            return null;
         }
 
         var response = await spotifyClient.GetTrackInformationAsync(bearerToken, trackId);
