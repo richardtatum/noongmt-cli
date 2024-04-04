@@ -167,6 +167,7 @@ public class PostClient
         var body = await response.Content.ReadFromJsonAsync<GetPostsResponse>();
         var newestPost = body?.Items.FirstOrDefault()?.LiveDate;
   
-        return newestPost?.AddDays(1) ?? DateTime.UtcNow.ToNoonLocalInUTC();
+        return newestPost?.AddDays(1).ToNoonLocalInUTC() 
+            ?? DateTime.UtcNow.ToNoonLocalInUTC();
     }
 }
